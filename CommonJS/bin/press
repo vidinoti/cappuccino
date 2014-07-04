@@ -198,7 +198,7 @@ function pressEnvironment(rootPath, outputFiles, environment, options) {
 
     analyzer.load(mainPath);
 
-    analyzer.finishLoading();
+    //analyzer.finishLoading();
 
     // coalesce the results
     var dependencies = analyzer.mapGlobalsToFiles();

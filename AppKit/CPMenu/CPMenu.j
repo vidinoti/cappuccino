@@ -27,6 +27,7 @@
 
 @import "CPKeyValueBinding.j"
 @import "CPMenuItem.j"
+@import "CALayer.j"
 
 @global CPApp
 
@@ -1015,6 +1016,8 @@ var _CPMenuBarVisible               = NO,
     // an additional mouse move after all this, but not in other browsers.
     // This will be fixed correctly with the coming run loop changes.
     [_CPDisplayServer run];
+
+    [CALayer runLoopUpdateLayers];
 }
 
 /* @ignore */

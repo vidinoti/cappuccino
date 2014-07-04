@@ -363,6 +363,8 @@ CPWebViewAppKitScrollMaxPollCount                  = 3;
 
 - (void)_setEffectiveScrollMode:(int)aScrollMode
 {
+    if(!_iframe) return; //To avoid a bug while pressing a CPWebView as the parent is not yet set.
+
     _effectiveScrollMode = aScrollMode;
 
     _ignoreLoadStart = YES;
