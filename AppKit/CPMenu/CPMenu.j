@@ -652,6 +652,7 @@ var _CPMenuBarVisible               = NO,
         if (binder)
         {
             [binder setValueFor:CPEnabledBinding];
+            [[_menuWindow _menuView] tile];
             return;
         }
 
