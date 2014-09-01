@@ -126,7 +126,7 @@ CPTextFieldStatePlaceholder = CPThemeState("placeholder");
     BOOL                        _isSelectable;
     BOOL                        _isSecure;
     BOOL                        _willBecomeFirstResponderByClick;
-    BOOL                        _invokedByKeyEvent;
+    BOOL                        _invokedByUserEvent;
 
     BOOL                        _drawsBackground;
 
@@ -141,7 +141,6 @@ CPTextFieldStatePlaceholder = CPThemeState("placeholder");
     // NS-style Display Properties
     CPTextFieldBezelStyle       _bezelStyle;
     BOOL                        _isBordered;
-    CPControlSize               _controlSize;
 }
 
 + (Class)_binderClassForBinding:(CPString)aBinding
@@ -227,6 +226,21 @@ CPTextFieldStatePlaceholder = CPThemeState("placeholder");
             @"bezel-color": [CPNull null],
         };
 }
+
+
+#pragma mark -
+#pragma mark Control Size
+
+- (void)setControlSize:(CPControlSize)aControlSize
+{
+    [super setControlSize:aControlSize];
+
+    if ([self isBezeled])
+        [self _sizeToControlSize];
+}
+
+#pragma mark -
+
 
 #if PLATFORM(DOM)
 - (DOMElement)_inputElement
@@ -975,9 +989,9 @@ CPTextFieldStatePlaceholder = CPThemeState("placeholder");
 
     // Set a flag so that key handling methods (such as deleteBackward:)
     // know they were invoked from a user event.
-    _invokedByKeyEvent = YES;
+    _invokedByUserEvent = !!anEvent._DOMEvent;
     [self interpretKeyEvents:[anEvent]];
-    _invokedByKeyEvent = NO;
+    _invokedByUserEvent = NO;
 
     [[CPRunLoop currentRunLoop] limitDateForMode:CPDefaultRunLoopMode];
 }
@@ -1596,7 +1610,7 @@ CPTextFieldStatePlaceholder = CPThemeState("placeholder");
 {
     var newValue = [_stringValue stringByReplacingCharactersInRange:range withString:characters];
 
-    if (_invokedByKeyEvent)
+    if (_invokedByUserEvent)
     {
         [self _setStringValue:newValue];
     }
@@ -1847,7 +1861,7 @@ CPTextFieldStatePlaceholder = CPThemeState("placeholder");
     if (!wind)
         return NO;
 
-    var frame = [self convertRectToBase:[self bounds]],
+    var frame = [self convertRectToBase:[self contentRectForBounds:[self bounds]]],
         usableRect = [[wind platformWindow] usableContentFrame];
 
     frame.origin = [wind convertBaseToGlobal:frame.origin];
