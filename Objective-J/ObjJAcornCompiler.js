@@ -383,7 +383,7 @@ var ObjJAcornCompiler = function(/*String*/ aString, /*CFURL*/ aURL, /*unsigned*
         this.tokens = exports.acorn.parse(aString);
     }
     catch (e) {
-        if (e.lineStart != null)
+        if (e.lineStart)
         {
             var message = this.prettifyMessage(e, "ERROR");
 #ifdef BROWSER
@@ -1778,8 +1778,7 @@ ClassDeclarationStatement: function(node, st, c) {
         var getterSetterBuffer = new StringBuffer();
 
         // Add the class declaration to compile accessors correctly
-        // Remove all protocols from class declaration
-        getterSetterBuffer.concat(compiler.source.substring(node.start, node.endOfIvars).replace(/<.*>/g, ""));
+        getterSetterBuffer.concat(compiler.source.substring(node.start, node.endOfIvars));
         getterSetterBuffer.concat("\n");
 
         for (var i = 0; i < node.ivardeclarations.length; ++i)
@@ -1894,15 +1893,8 @@ ClassDeclarationStatement: function(node, st, c) {
         // Lookup the protocolDefs for the protocols
         var protocolDefs = [];
 
-        for (var i = 0, size = protocols.length; i < size; i++) {
-            var protocol = protocols[i],
-                protocolDef = compiler.getProtocolDef(protocol.name);
-
-            if (!protocolDef)
-                throw compiler.error_message("Cannot find protocol declaration for '" + protocol.name + "'", protocol);
-
-            protocolDefs.push(protocolDef);
-        }
+        for (var i = 0, size = protocols.length; i < size; i++)
+            protocolDefs.push(compiler.getProtocolDef(protocols[i].name));
 
         var unimplementedMethods = classDef.listOfNotImplementedMethodsForProtocols(protocolDefs);
 

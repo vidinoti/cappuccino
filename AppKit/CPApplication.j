@@ -448,7 +448,7 @@ var CPMainCibFile               = @"CPMainCibFile",
     [CPPlatform activateIgnoringOtherApps:shouldIgnoreOtherApps];
     _isActive = YES;
 
-    [self _didBecomeActive];
+    [self _willResignActive];
 }
 
 - (void)deactivate
@@ -1173,7 +1173,7 @@ var CPMainCibFile               = @"CPMainCibFile",
         [[self keyWindow] orderFront:self];
     else if ([self mainWindow])
         [[self mainWindow] makeKeyAndOrderFront:self];
-    else if ([self mainMenu])
+    else
         [[self mainMenu]._menuWindow makeKeyWindow]; //FIXME this may not actually work
 
     _previousKeyWindow = nil;
