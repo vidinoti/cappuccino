@@ -962,7 +962,7 @@ NOT YET IMPLEMENTED
 </pre>
 */
 
-- (void)unfocusedSelectionGradientColors
+- (CPColor)unfocusedSelectionGradientColors
 {
     if (!_unfocusedSourceListSelectionColor)
     {
@@ -5123,7 +5123,12 @@ Your delegate can implement this method to avoid subclassing the tableview to ad
     var hit = [super hitTest:aPoint];
 
     if ([[CPApp currentEvent] type] == CPLeftMouseDown && [hit acceptsFirstResponder] && ![self isRowSelected:[self rowForView:hit]])
+    {
+        if (_selectionHighlightStyle == CPTableViewSelectionHighlightStyleNone)
+            return hit;
+
         return self;
+    }
 
     return hit;
 }
@@ -5177,7 +5182,7 @@ Your delegate can implement this method to avoid subclassing the tableview to ad
     // This makes sure the theming effects of a focused table remain in effect even as cells are being edited in it.
     [self _notifyViewDidBecomeFirstResponder];
 
-    if (_editingRow !== CPNotFound && [responder isKindOfClass:[CPTextField class]] && ![responder isBezeled])
+    if (_editingRow !== CPNotFound && [responder isKindOfClass:[CPTextField class]] && ![responder isBezeled] && [responder isEditable])
     {
         [responder setBezeled:YES];
         [self _registerForEndEditingNote:responder];

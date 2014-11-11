@@ -31,6 +31,7 @@
 
 @global CPApp
 @global CPStringPboardType
+@global CPCursor
 
 
 @protocol CPTextFieldDelegate <CPControlTextEditingDelegate>
@@ -922,6 +923,12 @@ CPTextFieldStatePlaceholder = CPThemeState("placeholder");
     [self textDidChange:[CPNotification notificationWithName:CPControlTextDidChangeNotification object:self userInfo:nil]];
 }
 
+- (void)mouseMoved:(CPEvent)anEvent
+{
+    [super mouseMoved:anEvent];
+    [self _updateCursorForEvent:anEvent];
+}
+
 - (void)mouseDown:(CPEvent)anEvent
 {
     // Don't track! (ever?)
@@ -1130,6 +1137,27 @@ CPTextFieldStatePlaceholder = CPThemeState("placeholder");
     [self _continuouslyReverseSetBinding];
 
     [super textDidChange:note];
+}
+
+- (void)_updateCursorForEvent:(CPEvent)anEvent
+{
+    var frame = CGRectMakeCopy([self frame]),
+        contentInset = [self currentValueForThemeAttribute:@"content-inset"];
+
+    frame = [[self superview] convertRectToBase:CGRectInsetByInset(frame, contentInset)];
+
+    if ([self isEnabled] && ([self isSelectable] || [self isEditable]) && CGRectContainsPoint(frame, [anEvent locationInWindow]))
+    {
+#if PLATFORM(DOM)
+        self._DOMElement.style.cursor = "text";
+#endif
+    }
+    else
+    {
+#if PLATFORM(DOM)
+        self._DOMElement.style.cursor = "default";
+#endif
+    }
 }
 
 /*!
