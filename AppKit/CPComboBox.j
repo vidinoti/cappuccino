@@ -470,10 +470,7 @@ var CPComboBoxTextSubview = @"text",
     [_listDelegate setFont:[self font]];
     [_listDelegate setAlignment:[self alignment]];
     [[_listDelegate scrollView] setHasVerticalScroller:_hasVerticalScroller];
-    
-    if(_intercellSpacing)
-        [[_listDelegate tableView] setIntercellSpacing:_intercellSpacing];
-    
+    [[_listDelegate tableView] setIntercellSpacing:_intercellSpacing];
     [[_listDelegate tableView] setRowHeight:_itemHeight];
 }
 
