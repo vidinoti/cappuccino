@@ -28,6 +28,8 @@
 
 @import "CPTextField.j"
 
+@global CPTableViewColumnDidResizeNotification
+
 @class _CPTableColumnHeaderView
 @class CPTableView
 
@@ -184,7 +186,7 @@ CPTableColumnUserResizingMask   = 1 << 1;
         [tableView tile];
 
         if (!_disableResizingPosting)
-            [[self tableView] _didResizeTableColumn:self oldWidth:oldWidth];
+            [self _postDidResizeNotificationWithOldWidth:oldWidth];
     }
 }
 
@@ -535,6 +537,19 @@ CPTableColumnUserResizingMask   = 1 << 1;
 - (CPString)headerToolTip
 {
     return _headerToolTip;
+}
+
+/*!
+    @ignore
+*/
+- (void)_postDidResizeNotificationWithOldWidth:(float)oldWidth
+{
+    [[self tableView] _didResizeTableColumn:self];
+
+    [[CPNotificationCenter defaultCenter]
+    postNotificationName:CPTableViewColumnDidResizeNotification
+                  object:[self tableView]
+                userInfo:@{ @"CPTableColumn": self, @"CPOldWidth": oldWidth }];
 }
 
 @end

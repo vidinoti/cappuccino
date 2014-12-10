@@ -38,13 +38,8 @@
 
 @end
 
-var CPTextFieldDelegate_control_didFailToFormatString_errorDescription_ = 1 << 1,
-    CPTextFieldDelegate_controlTextDidBeginEditing_                     = 1 << 2,
-    CPTextFieldDelegate_controlTextDidChange_                           = 1 << 3,
-    CPTextFieldDelegate_controlTextDidEndEditing_                       = 1 << 4,
-    CPTextFieldDelegate_controlTextDidFocus_                            = 1 << 5,
-    CPTextFieldDelegate_controlTextDidBlur_                             = 1 << 6;
 
+var CPTextFieldDelegate_control_didFailToFormatString_errorDescription_ = 1 << 1;
 
 @typedef CPTextFieldBezelStyle
 CPTextFieldSquareBezel          = 0;    /*! A textfield bezel with squared corners. */
@@ -882,7 +877,7 @@ CPTextFieldStatePlaceholder = CPThemeState("placeholder");
 
     [super _addObservers];
 
-    if ([[self window] firstResponder] === self)
+    if ([self window] === self)
         [self _setObserveWindowKeyNotifications:YES];
 }
 
@@ -1152,9 +1147,6 @@ CPTextFieldStatePlaceholder = CPThemeState("placeholder");
     if ([note object] != self)
         return;
 
-    if (_implementedDelegateMethods & CPTextFieldDelegate_controlTextDidBlur_)
-        [_delegate controlTextDidBlur:note];
-
     [[CPNotificationCenter defaultCenter] postNotification:note];
 }
 
@@ -1163,9 +1155,6 @@ CPTextFieldStatePlaceholder = CPThemeState("placeholder");
     // this looks to prevent false propagation of notifications for other objects
     if ([note object] != self)
         return;
-
-    if (_implementedDelegateMethods & CPTextFieldDelegate_controlTextDidFocus_)
-        [_delegate controlTextDidFocus:note];
 
     [[CPNotificationCenter defaultCenter] postNotification:note];
 }
@@ -1177,34 +1166,7 @@ CPTextFieldStatePlaceholder = CPThemeState("placeholder");
 
     [self _continuouslyReverseSetBinding];
 
-    if (_implementedDelegateMethods & CPTextFieldDelegate_controlTextDidChange_)
-        [_delegate controlTextDidChange:note];
-
     [super textDidChange:note];
-}
-
-- (void)textDidBeginEditing:(CPNotification)note
-{
-    //this looks to prevent false propagation of notifications for other objects
-    if ([note object] != self)
-        return;
-
-    if (_implementedDelegateMethods & CPTextFieldDelegate_controlTextDidBeginEditing_)
-        [_delegate controlTextDidBeginEditing:[[CPNotification alloc] initWithName:CPControlTextDidBeginEditingNotification object:self userInfo:@{"CPFieldEditor": [note object]}]]
-
-    [super textDidBeginEditing:note];
-}
-
-- (void)textDidEndEditing:(CPNotification)note
-{
-    //this looks to prevent false propagation of notifications for other objects
-    if ([note object] != self)
-        return;
-
-    [super textDidEndEditing:note];
-
-    if (_implementedDelegateMethods & CPTextFieldDelegate_controlTextDidEndEditing_)
-        [_delegate controlTextDidEndEditing:note];
 }
 
 - (void)_updateCursorForEvent:(CPEvent)anEvent
@@ -1751,8 +1713,17 @@ CPTextFieldStatePlaceholder = CPThemeState("placeholder");
 
 - (void)setDelegate:(id <CPTextFieldDelegate>)aDelegate
 {
-    if (_delegate === aDelegate)
-        return;
+    var defaultCenter = [CPNotificationCenter defaultCenter];
+
+    //unsubscribe the existing delegate if it exists
+    if (_delegate)
+    {
+        [defaultCenter removeObserver:_delegate name:CPControlTextDidBeginEditingNotification object:self];
+        [defaultCenter removeObserver:_delegate name:CPControlTextDidChangeNotification object:self];
+        [defaultCenter removeObserver:_delegate name:CPControlTextDidEndEditingNotification object:self];
+        [defaultCenter removeObserver:_delegate name:CPTextFieldDidFocusNotification object:self];
+        [defaultCenter removeObserver:_delegate name:CPTextFieldDidBlurNotification object:self];
+    }
 
     _delegate = aDelegate;
     _implementedDelegateMethods = 0;
@@ -1761,19 +1732,40 @@ CPTextFieldStatePlaceholder = CPThemeState("placeholder");
         _implementedDelegateMethods |= CPTextFieldDelegate_control_didFailToFormatString_errorDescription_
 
     if ([_delegate respondsToSelector:@selector(controlTextDidBeginEditing:)])
-        _implementedDelegateMethods |= CPTextFieldDelegate_controlTextDidBeginEditing_;
+        [defaultCenter
+            addObserver:_delegate
+               selector:@selector(controlTextDidBeginEditing:)
+                   name:CPControlTextDidBeginEditingNotification
+                 object:self];
 
     if ([_delegate respondsToSelector:@selector(controlTextDidChange:)])
-        _implementedDelegateMethods |= CPTextFieldDelegate_controlTextDidChange_;
+        [defaultCenter
+            addObserver:_delegate
+               selector:@selector(controlTextDidChange:)
+                   name:CPControlTextDidChangeNotification
+                 object:self];
+
 
     if ([_delegate respondsToSelector:@selector(controlTextDidEndEditing:)])
-        _implementedDelegateMethods |= CPTextFieldDelegate_controlTextDidEndEditing_;
+        [defaultCenter
+            addObserver:_delegate
+               selector:@selector(controlTextDidEndEditing:)
+                   name:CPControlTextDidEndEditingNotification
+                 object:self];
 
     if ([_delegate respondsToSelector:@selector(controlTextDidFocus:)])
-        _implementedDelegateMethods |= CPTextFieldDelegate_controlTextDidFocus_;
+        [defaultCenter
+            addObserver:_delegate
+               selector:@selector(controlTextDidFocus:)
+                   name:CPTextFieldDidFocusNotification
+                 object:self];
 
     if ([_delegate respondsToSelector:@selector(controlTextDidBlur:)])
-        _implementedDelegateMethods |= CPTextFieldDelegate_controlTextDidBlur_;
+        [defaultCenter
+            addObserver:_delegate
+               selector:@selector(controlTextDidBlur:)
+                   name:CPTextFieldDidBlurNotification
+                 object:self];
 }
 
 - (id)delegate

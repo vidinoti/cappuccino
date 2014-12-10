@@ -96,41 +96,28 @@ var ListColumnIdentifier = @"1";
     return [super sendEvent:anEvent];
 }
 
+- (void)orderFront:(id)sender
+{
+    [self _trapNextMouseDown];
+    [super orderFront:sender];
+}
+
 - (void)_mouseWasClicked:(CPEvent)anEvent
 {
-    // This is needed, when the user close the list with the key enter
-    if (![self isVisible])
-    {
-        [CPApp sendEvent:anEvent];
-        return;
-    }
-
     var mouseWindow = [anEvent window],
-        rect = CGRectInsetByInset([[[self delegate] dataSource] bounds], [[[self delegate] dataSource] currentValueForThemeAttribute:@"content-inset"]),
+        rect = [[[self delegate] dataSource] bounds],
         point = [[[self delegate] dataSource] convertPoint:[anEvent locationInWindow] fromView:nil];
 
-    // If we click somewhere else than the comboBox or the panel we close the panel
     if (mouseWindow != self && !CGRectContainsPoint(rect, point))
-    {
         [[self delegate] close];
-    }
     else
-    {
-        // If we click on the panel, the app will know what to do
-        if (mouseWindow == self)
-            [CPApp sendEvent:anEvent];
-
-        // If we click on the comboBox field, we will trap the next mouse down
-        if (CGRectContainsPoint(rect, point))
-            [self _trapNextMouseDown];
-    }
-
+        [self _trapNextMouseDown];
 }
 
 - (void)_trapNextMouseDown
 {
-    // Dequeue the event and mouseWasClicked will do what it needs to do
-    [CPApp setTarget:self selector:@selector(_mouseWasClicked:) forNextEventMatchingMask:CPLeftMouseDownMask untilDate:nil inMode:CPDefaultRunLoopMode dequeue:YES];
+    // Don't dequeue the event so clicks in controls will work
+    [CPApp setTarget:self selector:@selector(_mouseWasClicked:) forNextEventMatchingMask:CPLeftMouseDownMask untilDate:nil inMode:CPDefaultRunLoopMode dequeue:NO];
 }
 
 @end
@@ -336,11 +323,6 @@ var ListColumnIdentifier = @"1";
     if ([_panel isVisible])
         return;
 
-    [self listWillPopUp];
-
-    [_panel _trapNextMouseDown];
-    [[aView window] addChildWindow:_panel ordered:CPWindowAbove];
-
     var rowRect = [_tableView rectOfRow:[self numberOfRowsInTableView:_tableView] - 1],
         frame = CGRectMake(0, 0, MAX(_listWidth, CGRectGetWidth(aRect)), CGRectGetMaxY(rowRect));
 
@@ -351,6 +333,10 @@ var ListColumnIdentifier = @"1";
     [_scrollView setFrameSize:CGSizeMakeCopy(frame.size)];
     [_tableView setEnabled:[_dataSource numberOfItemsInList:self] > 0];
     [self scrollItemAtIndexToTop:[_tableView selectedRow]];
+
+    [self listWillPopUp];
+
+    [[aView window] addChildWindow:_panel ordered:CPWindowAbove];
 }
 
 #pragma mark Setting Display Attributes
