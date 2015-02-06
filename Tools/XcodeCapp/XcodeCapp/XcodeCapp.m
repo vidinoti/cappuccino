@@ -911,16 +911,16 @@ void fsevents_callback(ConstFSEventStreamRef streamRef,
         [defaults setObject:[NSNumber numberWithInt:kXCCAPIModeFolder] forKey:kDefaultXCCAPIMode];
     }
 
-    switch ([defaults integerForKey:kDefaultXCCAPIMode])
+    /*switch ([defaults integerForKey:kDefaultXCCAPIMode])
     {
-        case kXCCAPIModeAuto:
+        case kXCCAPIModeAuto:*/
             self.isUsingFileLevelAPI = self.supportsFileLevelAPI;
-            break;
+    /*        break;
             
         case kXCCAPIModeFolder:
             self.isUsingFileLevelAPI = NO;
             break;
-    }
+    }*/
 
     self.reactToInodeModification = self.isUsingFileLevelAPI ? [defaults boolForKey:kDefaultXCCReactToInodeMod] : NO;
 }
