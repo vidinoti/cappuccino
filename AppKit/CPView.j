@@ -177,6 +177,7 @@ var CPViewHighDPIDrawingEnabled = YES;
     BOOL                _postsBoundsChangedNotifications;
     BOOL                _inhibitFrameAndBoundsChangedNotifications;
     BOOL                _inLiveResize;
+    BOOL                _isSuperviewAClipView;
 
 #if PLATFORM(DOM)
     DOMElement          _DOMElement;
@@ -848,6 +849,8 @@ var CPViewHighDPIDrawingEnabled = YES;
 */
 - (void)viewWillMoveToSuperview:(CPView)aView
 {
+    _isSuperviewAClipView = [aView isKindOfClass:[CPClipView class]];
+
     [self _removeObservers];
 
     if (aView)
@@ -979,6 +982,9 @@ var CPViewHighDPIDrawingEnabled = YES;
 
     if (_postsFrameChangedNotifications)
         [CachedNotificationCenter postNotificationName:CPViewFrameDidChangeNotification object:self];
+
+    if (_isSuperviewAClipView)
+        [[self superview] viewFrameChanged:[[CPNotification alloc] initWithName:CPViewFrameDidChangeNotification object:self userInfo:nil]];
 }
 
 /*!
@@ -1040,6 +1046,9 @@ var CPViewHighDPIDrawingEnabled = YES;
 
     if (_postsFrameChangedNotifications && !_inhibitFrameAndBoundsChangedNotifications)
         [CachedNotificationCenter postNotificationName:CPViewFrameDidChangeNotification object:self];
+
+    if (_isSuperviewAClipView && !_inhibitFrameAndBoundsChangedNotifications)
+        [[self superview] viewFrameChanged:[[CPNotification alloc] initWithName:CPViewFrameDidChangeNotification object:self userInfo:nil]];
 
 #if PLATFORM(DOM)
     var transform = _superview ? _superview._boundsTransform : NULL;
@@ -1194,6 +1203,9 @@ var CPViewHighDPIDrawingEnabled = YES;
 
     if (_postsFrameChangedNotifications && !_inhibitFrameAndBoundsChangedNotifications)
         [CachedNotificationCenter postNotificationName:CPViewFrameDidChangeNotification object:self];
+
+    if (_isSuperviewAClipView && !_inhibitFrameAndBoundsChangedNotifications)
+        [[self superview] viewFrameChanged:[[CPNotification alloc] initWithName:CPViewFrameDidChangeNotification object:self userInfo:nil]];
 }
 
 /*!
@@ -1237,6 +1249,9 @@ var CPViewHighDPIDrawingEnabled = YES;
 
     if (_postsBoundsChangedNotifications)
         [CachedNotificationCenter postNotificationName:CPViewBoundsDidChangeNotification object:self];
+
+    if (_isSuperviewAClipView)
+        [[self superview] viewBoundsChanged:[[CPNotification alloc] initWithName:CPViewBoundsDidChangeNotification object:self userInfo:nil]];
 }
 
 /*!
@@ -1299,6 +1314,9 @@ var CPViewHighDPIDrawingEnabled = YES;
 
     if (_postsBoundsChangedNotifications && !_inhibitFrameAndBoundsChangedNotifications)
         [CachedNotificationCenter postNotificationName:CPViewBoundsDidChangeNotification object:self];
+
+    if (_isSuperviewAClipView && !_inhibitFrameAndBoundsChangedNotifications)
+        [[self superview] viewBoundsChanged:[[CPNotification alloc] initWithName:CPViewBoundsDidChangeNotification object:self userInfo:nil]];
 }
 
 /*!
@@ -1337,6 +1355,9 @@ var CPViewHighDPIDrawingEnabled = YES;
 
     if (_postsBoundsChangedNotifications && !_inhibitFrameAndBoundsChangedNotifications)
         [CachedNotificationCenter postNotificationName:CPViewBoundsDidChangeNotification object:self];
+
+    if (_isSuperviewAClipView && !_inhibitFrameAndBoundsChangedNotifications)
+        [[self superview] viewBoundsChanged:[[CPNotification alloc] initWithName:CPViewBoundsDidChangeNotification object:self userInfo:nil]];
 }
 
 
@@ -3496,7 +3517,6 @@ var CPViewAutoresizingMaskKey       = @"CPViewAutoresizingMask",
     // Also decode these "early".
     _frame = [aCoder decodeRectForKey:CPViewFrameKey];
     _bounds = [aCoder decodeRectForKey:CPViewBoundsKey];
-    _scaleSize = [aCoder containsValueForKey:CPViewScaleKey] ? [aCoder decodeSizeForKey:CPViewScaleKey] : CGSizeMake(1.0, 1.0);
 
     self = [super initWithCoder:aCoder];
 
@@ -3541,6 +3561,7 @@ var CPViewAutoresizingMaskKey       = @"CPViewAutoresizingMask",
         if (_toolTip)
             [self _installToolTipEventHandlers];
 
+        _scaleSize = [aCoder containsValueForKey:CPViewScaleKey] ? [aCoder decodeSizeForKey:CPViewScaleKey] : CGSizeMake(1.0, 1.0);
         _hierarchyScaleSize = [aCoder containsValueForKey:CPViewSizeScaleKey] ? [aCoder decodeSizeForKey:CPViewSizeScaleKey] : CGSizeMake(1.0, 1.0);
         _isScaled = [aCoder containsValueForKey:CPViewIsScaledKey] ? [aCoder decodeBoolForKey:CPViewIsScaledKey] : NO;
 

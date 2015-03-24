@@ -1235,11 +1235,7 @@ DOCSET_PUBLISHER_ID    = org.cappuccino-project
 # The default value is: Publisher.
 # This tag requires that the tag GENERATE_DOCSET is set to YES.
 
-<<<<<<< HEAD
-DOCSET_PUBLISHER_NAME  = Cappuccino Project
-=======
 DOCSET_PUBLISHER_NAME  = "Cappuccino Project"
->>>>>>> cappuccino/master
 
 # If the GENERATE_HTMLHELP tag is set to YES then doxygen generates three
 # additional HTML index files: index.hhp, index.hhc, and index.hhk. The
@@ -1395,14 +1391,6 @@ ECLIPSE_DOC_ID         = org.doxygen.Project
 # This tag requires that the tag GENERATE_HTML is set to YES.
 
 DISABLE_INDEX          = YES
-<<<<<<< HEAD
-
-# This tag can be used to set the number of enum values (range [1..20])
-# that doxygen will group on one line in the generated HTML documentation.
-
-ENUM_VALUES_PER_LINE   = 4
-=======
->>>>>>> cappuccino/master
 
 # The GENERATE_TREEVIEW tag is used to specify whether a tree-like index
 # structure should be generated to display hierarchical information. If the tag

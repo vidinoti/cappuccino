@@ -1,5 +1,7 @@
 @import <AppKit/AppKit.j>
 
+@import "CPNotificationCenterHelper.j"
+
 [CPApplication sharedApplication];
 
 @implementation CPTableViewTest : OJTestCase
