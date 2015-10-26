@@ -47,7 +47,7 @@ if (DOMBaseElementsCount > 0)
 
 // Set compiler flags
 
-if (typeof OBJJ_AUTO_BOOTSTRAP !== "undefined")
+if (typeof OBJJ_COMPILER_FLAGS !== 'undefined')
 {
     var flags = 0;
     for (var i = 0; i < OBJJ_COMPILER_FLAGS.length; i++)
