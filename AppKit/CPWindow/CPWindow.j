@@ -55,6 +55,7 @@
 @class _CPWindowFrameAnimation
 
 @global CPApp
+@global _CPPlatformWindowWillCloseNotification
 
 @typedef _CPWindowFullPlatformWindowSession
 
@@ -2856,7 +2857,7 @@ CPTexturedBackgroundWindowMask
     if (delegate && endSelector)
     {
         if (_sheetContext["isAttached"])
-            objj_msgSend(delegate, endSelector, _sheetContext["sheet"], _sheetContext["returnCode"],
+            delegate.isa.objj_msgSend3(delegate, endSelector, _sheetContext["sheet"], _sheetContext["returnCode"],
                 _sheetContext["contextInfo"]);
         else
             _sheetContext["deferDidEndSelector"] = YES;
@@ -2920,7 +2921,8 @@ CPTexturedBackgroundWindowMask
         _sheetContext = nil;
         sheet._parentView = nil;
 
-        objj_msgSend(delegate, selector, sheet, returnCode, contextInfo);
+        if (delegate != null)
+            delegate.isa.objj_msgSend3(delegate, selector, sheet, returnCode, contextInfo);
     }
     else
     {
