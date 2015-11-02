@@ -76,6 +76,8 @@ var CPViewThemeClassKey             = @"CPViewThemeClassKey",
 - (BOOL)hasThemeState:(ThemeState)aState
 {
 #if DEBUG
+// TODO: To allow aState to be an array is now deprecated. An exception is thrown only in Debug version as
+// the preformance cost for this check is to high. We should remove this check in a future release.
     if (aState && aState.isa && [aState isKindOfClass:CPArray])
         [CPException raise:CPInvalidArgumentException reason:@"aState can't be an array. Please use 'hasThemeStates: instead: " + aState];
 #endif
@@ -89,15 +91,16 @@ var CPViewThemeClassKey             = @"CPViewThemeClassKey",
         aState = [states objectAtIndex:--i];
 
     while (i > 0)
-    {
         aState = aState.and([states objectAtIndex:--i]);
-    }
+
     return _themeState.hasThemeState(aState);
 }
 
 - (BOOL)setThemeState:(ThemeState)aState
 {
 #if DEBUG
+// TODO: To allow aState to be an array is now deprecated. An exception is thrown only in Debug version as
+// the preformance cost for this check is to high. We should remove this check in a future release.
     if (aState && aState.isa && [aState isKindOfClass:CPArray])
         [CPException raise:CPInvalidArgumentException reason:@"aState can't be an array. Please use 'setThemeStates: instead: " + aState];
 #endif
@@ -113,11 +116,14 @@ var CPViewThemeClassKey             = @"CPViewThemeClassKey",
 - (BOOL)unsetThemeState:(ThemeState)aState
 {
 #if DEBUG
+// TODO: To allow aState to be an array is now deprecated. An exception is thrown only in Debug version as
+// the preformance cost for this check is to high. We should remove this check in a future release.
     if (aState && aState.isa && [aState isKindOfClass:CPArray])
         [CPException raise:CPInvalidArgumentException reason:@"aState can't be an array. Please use 'unsetThemeStates: instead: " + aState];
 #endif
 
     var oldThemeState = _themeState;
+
     _themeState = _themeState.without(aState);
 
     if (oldThemeState === _themeState)
@@ -132,9 +138,8 @@ var CPViewThemeClassKey             = @"CPViewThemeClassKey",
         aState = [states objectAtIndex:--i];
 
     while (i > 0)
-    {
         aState = aState.and([states objectAtIndex:--i]);
-    }
+
     return [self setThemeState:aState];
 }
 
@@ -144,9 +149,8 @@ var CPViewThemeClassKey             = @"CPViewThemeClassKey",
         aState = [states objectAtIndex:--i];
 
     while (i > 0)
-    {
         aState = aState.and([states objectAtIndex:--i]);
-    }
+
     return [self unsetThemeState:aState];
 }
 
@@ -298,6 +302,8 @@ var NULL_THEME = {};
 - (void)setValue:(id)aValue forThemeAttribute:(CPString)aName inState:(ThemeState)aState
 {
 #if DEBUG
+// TODO: To allow aState to be an array is now deprecated. An exception is thrown only in Debug version as
+// the preformance cost for this check is to high. We should remove this check in a future release.
     if (aState.isa && [aState isKindOfClass:CPArray])
         [CPException raise:CPInvalidArgumentException reason:self + @": aState can't be an array. Please use 'setValue:forThemeAttribute:inStates:' instead: " + aState];
 #endif
@@ -316,9 +322,7 @@ var NULL_THEME = {};
         aState = [states objectAtIndex:--i];
 
     while (i > 0)
-    {
         aState = aState.and([states objectAtIndex:--i]);
-    }
 
     var themeAttr = _themeAttributes && _themeAttributes[aName];
 
@@ -359,9 +363,7 @@ var NULL_THEME = {};
         aState = [states objectAtIndex:--i];
 
     while (i > 0)
-    {
         aState = aState.and([states objectAtIndex:--i]);
-    }
 
     var themeAttr = _themeAttributes && _themeAttributes[aName];
 
