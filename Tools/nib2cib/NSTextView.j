@@ -1,9 +1,9 @@
 /*
  * NSTextView.j
- * AppKit
+ * nib2cib
  *
- * Created by Mathieu Monney.
- * Copyright 2016 Vidinoti SA
+ * Created by Alexendre Wilhelm.
+ * Copyright 2014 The Cappuccino Foundation.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,26 +20,47 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-@import "NSControl.j"
+@import <AppKit/CPTextView.j>
 
-@class CPTextView;
+@import "NSTextViewSharedData.j"
 
-// Hack: We include it ourself in our own projects
-if(typeof CPTextView == 'undefined') {
-@implementation CPTextView : CPControl
+@class Nib2Cib
 
-@end
+@implementation CPTextView (NSCoding)
+
+- (id)NS_initWithCoder:(CPCoder)aCoder textViewSharedData:(CPTextViewSharedData)aTextViewSharedData
+{
+    if (self = [super NS_initWithCoder:aCoder])
+    {
+        _textContainer = [aCoder decodeObjectForKey:@"NSTextContainer"];
+
+        [self setEditable:[aTextViewSharedData isEditable]];
+        [self setSelectable:[aTextViewSharedData isSelectable]];
+        [self setRichText:[aTextViewSharedData isRichText]];
+        [self setAllowsUndo:[aTextViewSharedData allowsUndo]];
+        [self setUsesFontPanel:[aTextViewSharedData usesFontPanel]];
+
+        [self setBackgroundColor:[aTextViewSharedData backgroundColor]];
+        [self setInsertionPointColor:[aTextViewSharedData insertionColor]];
+        [self setSelectedTextAttributes:[aTextViewSharedData selectedTextAttributes]];
+        [[self textContainer] setWidthTracksTextView:YES];
+    }
+
+    return self;
 }
 
+@end
+
 @implementation NSTextView : CPTextView
+{
+
+}
 
 - (id)initWithCoder:(CPCoder)aCoder
 {
-    self = [self NS_initWithCoder:aCoder];
-
-    if (self)
+    if (self = [self NS_initWithCoder:aCoder textViewSharedData:[aCoder decodeObjectForKey:@"NSSharedData"]])
     {
-        [self _adjustNib2CibSize];
+
     }
 
     return self;
@@ -51,4 +72,3 @@ if(typeof CPTextView == 'undefined') {
 }
 
 @end
-
