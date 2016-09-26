@@ -45,7 +45,7 @@ If you'd just like to get started using Cappuccino for your web apps, you are do
 The rest of these instructions are for building a development copy of Cappuccino.
 To build Cappuccino from source, check out the most recent stable version from GitHub:
 
-    $ git clone git://github.com/zittix/cappuccino.git (git)
+    $ git clone git://github.com/vidinoti/cappuccino.git (git)
 
 Then, simply type `jake` from within the root of the Cappuccino directory. If you
 get an error like `jake: command not found`, you forgot to run the bootstrap script
