@@ -2881,9 +2881,8 @@ CPTexturedBackgroundWindowMask
     // If the parent window is modal, the sheet started its own modal session
     if (sheet._isModal)
         [CPApp stopModal];
-        
-    //This is creating a bug on Safari and Firefox (double removeChild is done)
-    //[self _removeClipForSheet:sheet];
+
+    [self _removeClipForSheet:sheet];
 
     // Restore the state of window before it was sheetified
     sheet._isSheet = NO;
@@ -3007,7 +3006,7 @@ CPTexturedBackgroundWindowMask
         sheet._constrainsToUsableScreen = NO;
 
         [sheet setFrameOrigin:CGPointMake(sheetFrame.origin.x, sheetFrame.origin.y - contentOrigin.y)];
-        //[self _clipSheet:sheet]; //This is creating a bug on Safari and Firefox (double removeChild is done)
+        [self _clipSheet:sheet];
 
         endFrame.origin.y = -fullHeight;
         [sheet _setFrame:endFrame delegate:self duration:[self animationResizeTime:endFrame] curve:CPAnimationEaseIn];
@@ -3030,8 +3029,7 @@ CPTexturedBackgroundWindowMask
         var sheetFrame = [sheet frame],
             sheetOrigin = CGPointMakeCopy(sheetFrame.origin);
 
-        //This is creating a bug on Safari and Firefox (double removeChild is done)
-        //[self _removeClipForSheet:sheet];
+        [self _removeClipForSheet:sheet];
         [sheet setFrameOrigin:CGPointMake(sheetOrigin.x, [sheet frame].origin.y + sheetOrigin.y)];
 
         // we wanted to close the sheet while it animated in, do that now
